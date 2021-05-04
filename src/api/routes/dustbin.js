@@ -1,4 +1,5 @@
 const express = require("express");
+const { sendNotification } = require("../../utils/fcm-utils");
 
 const {
     calculateFullPercent,
@@ -44,7 +45,7 @@ function dustbinRouter(database){
 
                 if(newPercent > 90){
                     if(!notified){
-                        //TODO: FCM notification
+                        sendNotification(token, newPercent);
                         console.log("Sending Notification to user!!!!");
                         notified = true;
                     }

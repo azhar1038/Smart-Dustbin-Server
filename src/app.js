@@ -1,7 +1,9 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 
-const database = require("./utils/database");
+const {
+    database
+} = require("./utils/firebase-utils");
 const dustbinRouter = require("./api/routes/dustbin");
 
 const app = express();
