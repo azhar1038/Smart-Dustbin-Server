@@ -17,7 +17,7 @@ function sendNotification(token, percent){
     const message = {
         notification: {
             title: "Dustbin",
-            body: `Your dustbin id ${percent}% full!`,
+            body: `Your dustbin is ${percent}% full!`,
             channel_id: "smart_dustbin",
             sound: "notification",
             priority: "high",
