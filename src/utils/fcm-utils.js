@@ -1,6 +1,8 @@
 const admin = require("firebase-admin");
 const dotenv = require("dotenv");
 
+const {database} = require("./firebase-utils");
+
 dotenv.config();
 
 admin.initializeApp({
@@ -34,6 +36,37 @@ function sendNotification(token, percent){
     });
 }
 
+function sendToCollectors(name, address, percent){
+    database.ref(`collectors`).get().then( snapshot =>{
+        if(snapshot.exists && snapshot.val()){
+            const tokens = [];
+            const data = snapshot.val();
+            for (const key in data) {
+                tokens.push(data[key]['token']);
+            }
+            const message = {
+                notification: {
+                    title: `${name}'s dustbin ${percent}% full`,
+                    body: address,
+                    channel_id: "smart_dustbin_collector",
+                    sound: "notification",
+                    priority: "high",
+                    android_channel_id: "smart_dustbin_collector"
+                },
+            };
+            const options = {
+                priority: "high"
+            };
+            admin.messaging().sendToDevice(tokens, message, options).then(()=>{
+                console.log("Sent notifications to collectors");
+            }).catch((error)=>{
+                console.error("Failed to send to collectors", error);
+            });
+        }
+    });
+}
+
 module.exports={
-    sendNotification
+    sendNotification,
+    sendToCollectors,
 }

@@ -1,5 +1,5 @@
 const express = require("express");
-const { sendNotification } = require("../../utils/fcm-utils");
+const { sendNotification, sendToCollectors } = require("../../utils/fcm-utils");
 
 const {
     calculateFullPercent,
@@ -23,11 +23,13 @@ function dustbinRouter(database){
             return res.status(400).json({"message": "Please provide garbage distance"});
         }
 
-        database.ref(uid).get().then((snapshot)=>{
+        database.ref(`dustbins/${uid}`).get().then((snapshot)=>{
             if(snapshot.exists && snapshot.val()){
                 const data = snapshot.val();
                 const email = data['email'];
                 const oldDistance = data['distance'];
+                const address = data['address'];
+                const name = data['name'];
                 const height = data['height'];
                 var notified = data['notified'];
                 const token = data['token'];
@@ -47,6 +49,7 @@ function dustbinRouter(database){
                     if(!notified){
                         sendNotification(token, newPercent);
                         console.log("Sending Notification to user!!!!");
+                        sendToCollectors(name, address, newPercent);
                         notified = true;
                     }
                 }else if(notified){
@@ -54,7 +57,7 @@ function dustbinRouter(database){
                 }
                 updates['notified'] = notified;
 
-                database.ref(uid).update(updates).then(()=>{
+                database.ref(`dustbins/${uid}`).update(updates).then(()=>{
                     return res.status(200).json({"message": `Updated dustbin successfully. Sent Notification = ${notified}`});
                 }).catch((error)=>{
                     console.error(error);
@@ -65,7 +68,7 @@ function dustbinRouter(database){
                 var newEntry = {};
                 newEntry['distance'] = distance;
                 newEntry['notified'] = false;
-                database.ref(uid).set(newEntry).then(()=>{
+                database.ref(`dustbins/${uid}`).set(newEntry).then(()=>{
                     return res.status(200).json({"message": "Created new dustbin successfully"});
                 }).catch((error)=>{
                     console.error(error);
