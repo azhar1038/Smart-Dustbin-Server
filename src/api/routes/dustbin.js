@@ -11,7 +11,7 @@ function dustbinRouter(database){
 
     router.get('/dustbin', (req, res)=>{
         const uid = req.query.uid;
-        const distance = req.query.distance;
+        const distance = parseFloat(req.query.distance);
         if(!uid){
             return res.status(400).json({"message": "Please provide dustbin id"});
         }
