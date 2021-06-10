@@ -12,10 +12,11 @@ function dustbinRouter(database){
     router.get('/dustbin', (req, res)=>{
         const uid = req.query.uid;
         const distance = parseFloat(req.query.distance);
+        console.log(req.query)
         if(!uid){
             return res.status(400).json({"message": "Please provide dustbin id"});
         }
-        if(!distance){
+        if(isNaN(distance)){
             return res.status(400).json({"message": "Please provide garbage distance"});
         }
 
