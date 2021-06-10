@@ -55,6 +55,9 @@ function processRequest(uid, distance, database, res){
             if(!email){
                 return res.status(200).json({"message": "Ignoring request because no user is registered"});
             }
+            if(distance > height){
+                distance = height
+            }
             if(Math.abs(oldDistance-distance) < minTrigger(height)){
                 return res.status(200).json({"message": "Ignoring request because of minor change in distance"});
             }
